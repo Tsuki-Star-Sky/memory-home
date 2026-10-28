@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  />
+  <title>记忆小屋 · 私聊长期记忆</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #f4f3ed;
+      color: #314a49;
+      font:
+        16px/1.7 system-ui,
+        sans-serif;
+    }
+    main {
+      max-width: 1120px;
+      margin: 40px auto;
+      padding: 24px;
+    }
+    h1 {
+      margin: 0;
+    }
+    p {
+      color: #546477;
+    }
+    section,
+    article {
+      background: #fffefa;
+      border: 1px solid #dce5de;
+      border-radius: 18px;
+      padding: 20px;
+      margin: 18px 0;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+    label {
+      display: block;
+    }
+    input,
+    textarea,
+    button,
+    select {
+      font: inherit;
+      border: 1px solid #aebfce;
+      border-radius: 7px;
+      padding: 9px 12px;
+    }
+    input,
+    textarea {
+      max-width: 100%;
+    }
+    textarea {
+      width: 100%;
+      min-height: 100px;
+    }
+    button {
+      cursor: pointer;
+      background: #f0f5ed;
+      color: #314a49;
+      transition: background .15s, transform .15s;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: wait;
+    }
+    .danger {
+      color: #a32942;
+      background: #fff0f3;
+    }
+    small {
+      display: block;
+      color: #617285;
+    }
+    #status {
+      min-height: 28px;
+      white-space: pre-wrap;
+    }
+    #status[role="alert"] {
+      color: #a32942;
+    }
+    .quote {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    article h2 {
+      font-size: 17px;
+      margin: 0;
+    }
+    a {
+      color: #285e8d;
+    }
+    :focus-visible {
+      outline: 3px solid #7ba998;
+      outline-offset: 2px;
+    }
+    h1 { font-size: clamp(28px, 5vw, 40px); letter-spacing: .04em; }
+    h2 { margin: 0; font-size: 21px; }
+    .hero { padding: 26px 0 10px; }
+    .eyebrow { font-size: 12px; letter-spacing: .15em; color: #4e7565; }
+    .hero p { max-width: 760px; }
+    .primary { background: #4e7565; color: white; border-color: #4e7565; }
+    button:hover:not(:disabled) { filter: brightness(.97); }
+    button:active:not(:disabled) { transform: translateY(1px); }
+    input[type=checkbox] { accent-color: #4e7565; width: 17px; height: 17px; vertical-align: -3px; }
+    .settings { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; border-top:1px solid #dce5de; margin-top:22px; padding-top:18px; }
+    .settings small { padding-left:25px; margin-top:6px; }
+    .stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:22px 0; }
+    .stat { border:1px solid #dce5de; border-radius:16px; background:#fafbf8; padding:15px 18px; }
+    .stat:nth-child(2) { background:#edf5ef; }.stat:nth-child(3) { background:#eef3f8; }.stat:nth-child(4) { background:#f9eeeb; }
+    .stat strong { display:block; font-size:28px; font-weight:600; }.stat span { color:#637572; font-size:13px; }
+    .spread { justify-content:space-between; align-items:center; }
+    .tools { margin:16px 0; }.tools .search { flex:1 1 260px; }.tools input { width:100%; }
+    .badge { display:inline-block; font-size:12px; border-radius:16px; padding:2px 10px; background:#edf5ef; color:#4f6e5d; white-space:nowrap; }
+    .badge.dim { background:#f0f1f2; color:#667170; }.badge.warm { background:#f8ede3; color:#86674a; }
+    .record-actions { margin-top:14px; gap:8px; }.record-actions button,.learn-card button { font-size:13px; padding:6px 11px; }
+    .strength { font-size:12px; color:#637572; margin:10px 0 4px; }
+    .pager { display:flex; gap:16px; align-items:center; justify-content:center; margin:18px 0 28px; font-size:14px; }
+    .empty { border:1px dashed #cad6cc; border-radius:14px; padding:28px; text-align:center; background:#fafbf7; }
+    #learning-section { background:#f7f9f3; }
+    .learn-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:16px; }
+    .learn-card { background:#fffefa; border:1px solid #dce5de; border-radius:13px; padding:17px; min-width:0; }
+    .learn-card h3 { font-size:16px; margin:0; }.learn-card .row { margin-top:12px; }
+    details { font-size:13px; color:#637572; margin-top:10px; }summary { cursor:pointer; }details p { border-left:2px solid #d9e3d7; padding-left:10px; }
+    .hint { font-size:13px; }.note { padding:13px 16px; background:#f0f4ee; border-radius:12px; font-size:13px; }
+    @media(max-width:760px) { .settings,.learn-grid { grid-template-columns:1fr; }.stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(prefers-reduced-motion:reduce) { button { transition:none; } }
+    @media (max-width: 600px) {
+      main {
+        margin: 0;
+        padding: 16px;
+      }
+      .row > * {
+        max-width: 100%;
+      }
+    }
+  </style>
+  <main>
+    <a href="/" id="back">← 返回控制台</a>
+    <header class="hero">
+      <p class="eyebrow">一起经历的，慢慢留下</p>
+      <h1>记忆小屋</h1>
+      <p>记住相处里的小事，也给久远的往事留一个位置。这里整理的是每位私聊伙伴各自的记忆，沿用你已经设置的角色。</p>
+    </header>
+    <section>
+      <div class="row">
+        <label
+          >对方 QQ 号<input
+            id="qq"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="输入 QQ 号" /></label
+        ><button id="load" class="primary">查看记忆</button
+        ><button id="export">导出 JSON</button>
+      </div>
+      <div class="settings">
+        <div><label><input type="checkbox" id="decay" /> 让普通记忆自然淡忘</label><small>久未提起的事退到背景，内容仍保留。明确边界和固定的重要记忆会留下。</small></div>
+        <div><label><input type="checkbox" id="learning" /> 从相处中学习表达</label><small>仅适应低风险的交流习惯，保留完整人设。关闭后停止新学习，也不使用已学规则。</small></div>
+        <div>
+        <label><input type="checkbox" id="care" /> 允许适度主动关心</label
+        ><small
+          >北京时间 23:00–08:00 安静，至少间隔 12
+          小时，每天最多一次机会；没有回复便不追发。还需桥接原有主动开口设置开启。</small
+        >
+        </div>
+      </div>
+      <p id="status" role="status" aria-live="polite">先输入 QQ 号，再查看。</p>
+    </section>
+    <div class="stats" aria-label="记忆概览">
+      <div class="stat"><strong id="total-count">—</strong><span>留下的记忆 · 含历史版本</span></div>
+      <div class="stat"><strong id="protected-count">—</strong><span>重要记忆 · 留在心上</span></div>
+      <div class="stat"><strong id="archive-count">—</strong><span>归档的往事 · 内容仍在</span></div>
+      <div class="stat"><strong id="learning-count">—</strong><span>正在使用的表达习惯</span></div>
+    </div>
+    <div class="row spread"><h2>相处的小本本</h2><small id="loaded-person">尚未选择伙伴</small></div>
+    <p class="hint">淡忘不是删除；回忆强度只表示检索时的显著程度，不代表事实真假。过期的约定会作为往事，不能当作仍未发生。</p>
+    <div class="row tools">
+      <label class="search">在已加载内容中查找<input id="search" type="search" placeholder="关键词、片段均可" /></label>
+      <label>查看范围<select id="filter"><option value="all">全部记忆</option><option value="current">当前记忆</option><option value="protected">重要记忆</option><option value="background">退到背景</option><option value="archived">已归档</option><option value="superseded">更正前的历史</option></select></label>
+    </div>
+    <div id="records"></div>
+    <nav class="pager" aria-label="记忆分页"><button id="prev">上一页</button><span id="page-info">尚未加载</span><button id="next">下一页</button></nav>
+    <section id="learning-section" aria-label="学习小本本">
+      <div class="row spread"><h2>慢慢熟悉你的说话方式</h2><span id="learning-state" class="badge dim">尚未加载</span></div>
+      <p class="hint">这里学习的是回复长短、问句频率等表达习惯。事实更正仍保留原话证据，不把猜测写成人设。你可以确认候选，也可以撤销已启用的习惯。</p>
+      <label>学习记录<select id="learning-filter"><option value="current">正在使用与待确认</option><option value="all">全部学习记录</option><option value="pending">只看待确认</option><option value="rejected">已拒绝 / 已撤销</option><option value="superseded">已被替代</option></select></label>
+      <div id="learning-items" class="learn-grid"></div>
+    </section>
+    <section>
+      <button id="clear" class="danger">清空这个人的长期记忆</button
+      ><small
+        >“忘记”会删除对应记忆及关联学习证据；“清空”会清理这个人的长期记忆和学习记录。QQ 聊天、DSH
+        会话、以前手动导出的文件不会一起删除。备份含私聊内容，请妥善保管。</small
+      >
+      <p class="note">导出 JSON 供你查看和留存，包含私聊内容。它不是完整运行数据库；搬家或完整恢复请按使用说明停机复制数据文件。</p>
+    </section>
+  </main>
+  <script type="module">
+    const $ = (id) => document.getElementById(id);
+    const token = new URL(location.href).searchParams.get("token");
+    if (token) localStorage.setItem("consoleToken", token);
+    history.replaceState(null, "", "/private-memory");
+    const PAGE_SIZE = 24;
+    let rows = [], loadedKey = "", busy = false, loaded = null, page = 1, pages = 1;
+    const names = {
+      profile: "个人资料",
+      preference: "偏好与习惯",
+      episode: "经历与共同回忆",
+      reminder: "重要事件",
+    };
+    const stages = { fresh:"新近记住", familiar:"逐渐熟悉", background:"退到背景", archived:"已归档", protected:"重要记忆" };
+    const learningStates = { active:"正在使用", pending:"待你确认", rejected:"已拒绝 / 已撤销", superseded:"已被替代" };
+    const time = (v) => Number.isFinite(v) ? new Date(v).toLocaleString("zh-CN") : "时间未记录";
+    const el = (tag, text, className) => { const node=document.createElement(tag); if(text!==undefined)node.textContent=text; if(className)node.className=className; return node; };
+    function status(text, error = false) {
+      $("status").textContent = text;
+      $("status").setAttribute("role", error ? "alert" : "status");
+    }
+    function key() {
+      const q = $("qq").value.trim();
+      if (!/^[1-9][0-9]{0,15}$/.test(q) || BigInt(q)>BigInt(Number.MAX_SAFE_INTEGER)) throw Error("请填写有效的 QQ 号");
+      return "private:" + q;
+    }
+    function assertLoaded() {
+      if (key() !== loadedKey) throw Error("QQ 号已改变，请先点击查看记忆");
+      return loadedKey;
+    }
+    function lock() {
+      document.querySelectorAll("button,input,textarea,select").forEach(n=>n.disabled=busy);
+      $("prev").disabled=busy||page<=1; $("next").disabled=busy||page>=pages;
+      for(const id of ["care","decay","learning"])$(id).disabled=busy||!loadedKey;
+    }
+    function restoreSwitches() {
+      $("care").checked=!!loaded&&loaded.care?.enabled!==false;
+      $("decay").checked=!!loaded&&loaded.settings?.decayEnabled!==false;
+      $("learning").checked=!!loaded&&loaded.learning?.enabled!==false;
+    }
+    async function api(body, target = body ? assertLoaded() : key()) {
+      const r = await fetch(
+        "/api/private-memory" +
+          (body ? "" : "?key=" + encodeURIComponent(target)),
+        {
+          method: body ? "POST" : "GET",
+          headers: {
+            "x-console-token": localStorage.getItem("consoleToken") || "",
+            "content-type": "application/json",
+          },
+          ...(body ? { body: JSON.stringify({ ...body, key: target }) } : {}),
+        },
+      );
+      const data = await r.json();
+      if (!r.ok || !data.ok) throw Error(data.error || "操作失败");
+      if(key()!==target)throw Error("QQ 号已改变，请先点击查看记忆");
+      if(data.key&&data.key!==target)throw Error("返回的伙伴不一致，未显示或继续操作");
+      return data;
+    }
+    async function run(fn) {
+      if (busy) return;
+      busy = true;
+      lock();
+      try {
+        await fn();
+      } catch (e) {
+        status(e.message, true);
+      } finally {
+        busy = false;
+        restoreSwitches();
+        lock();
+      }
+    }
+    async function refresh(resetPage = false) {
+      const target=key(), data = await api(undefined,target);
+      if(!Array.isArray(data.records)||data.key!==target)throw Error("返回的记忆格式不正确，未替换当前内容");
+      rows = data.records;
+      loadedKey = data.key;
+      loaded=data;
+      if(resetPage)page=1;
+      restoreSwitches();
+      render();
+      renderLearning();
+      renderSummary();
+      status(`已加载 ${rows.length} 条记忆（包含更正前的历史版本）`);
+    }
+    function renderSummary() {
+      const s=loaded?.summary||{},items=loaded?.learning?.items||[];
+      $("total-count").textContent=s.total??rows.length;
+      $("protected-count").textContent=s.protected??rows.filter(r=>r.status==="active"&&r.memory?.stage==="protected").length;
+      $("archive-count").textContent=s.archived??rows.filter(r=>r.status==="active"&&r.memory?.stage==="archived").length;
+      $("learning-count").textContent=loaded?.learning?.enabled===false?0:(s.learningActive??items.filter(r=>r.status==="active").length);
+      $("loaded-person").textContent=loadedKey?`当前伙伴 · QQ ${loadedKey.slice(8)}`:"尚未选择伙伴";
+    }
+    function actionButton(label,body,success) {
+      const b=el("button",label);
+      b.onclick=()=>run(async()=>{await api(body);await refresh();if(success)status(success);});
+      return b;
+    }
+    function render() {
+      const list = $("records");
+      list.replaceChildren();
+      const q = $("search").value.trim().toLowerCase(),filter=$("filter").value;
+      const selected = rows.filter(
+        (r) => (!q || [r.content,...(r.tags||[])].join(" ").toLowerCase().includes(q)) &&
+          (filter==="all"||(filter==="superseded"?r.status!=="active":r.status==="active"&&(filter==="current"?r.memory?.stage!=="archived":r.memory?.stage===filter))),
+      );
+      pages=Math.max(1,Math.ceil(selected.length/PAGE_SIZE));page=Math.min(page,pages);
+      $("page-info").textContent=loadedKey?`第 ${page} / ${pages} 页 · ${selected.length} 条`:"尚未加载";
+      if (!selected.length) {
+        const p = document.createElement("p");
+        p.className="empty";
+        p.textContent = rows.length
+          ? "没有匹配的记忆。"
+          : "这里还没有长期记忆。清楚的称呼与喜好会自动记录，重要经历由模型引用你的原话记录。";
+        list.append(p);
+      }
+      for (const r of selected.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE)) {
+        const card = document.createElement("article"),
+          title = document.createElement("h2"),
+          quote = document.createElement("p"),
+          meta = document.createElement("small"),
+          buttons = document.createElement("div");
+        title.textContent =
+          names[r.kind] + (r.status === "active" ? "" : " · 已被更正");
+        quote.className = "quote";
+        quote.textContent = r.content;
+        meta.textContent =
+          `${r.sourceType === "operator" ? "操作者确认" : "用户原话"} · ${time(r.sourceTime)}` +
+          (r.dueAt ? ` · 关心时间 ${time(r.dueAt)}` : "");
+        buttons.className = "row record-actions";
+        const m=r.memory||{},heading=el("div",undefined,"row spread"),badge=el("span",r.status!=="active"?"历史版本":stages[m.stage]||"已记住","badge"+(m.stage==="archived"?" dim":m.stage==="protected"?" warm":""));
+        heading.append(title,badge);
+        if(r.dueAt&&r.dueAt<Date.now())meta.textContent=meta.textContent.replace("关心时间","事件时间（已过）");
+        card.append(heading, quote, meta);
+        if(r.status==="active") {
+          card.append(el("div",`回忆强度 ${Math.round(Math.max(0,Math.min(1,Number(m.strength)||0))*100)}% · ${m.evidenceCount||1} 次来源`,"strength"));
+          if(m.lastReinforcedAt)card.append(el("small",`最近巩固 · ${time(m.lastReinforcedAt)}`));
+        }
+        card.append(buttons);
+        list.append(card);
+        const del = document.createElement("button");
+        del.textContent = "忘记";
+        del.className = "danger";
+        del.onclick = () =>
+          run(async () => {
+            assertLoaded();
+            if (!confirm("忘记这条及同一事实的历史版本和关联学习证据？内容将从这份记忆库删除。")) return;
+            await api({ action: "forget", id: r.id });
+            await refresh();
+            status("已从长期记忆库删除。");
+          });
+        buttons.append(del);
+        if (r.status === "active") {
+          const edit = document.createElement("button");
+          edit.textContent = "修改";
+          edit.onclick = () => {
+            try { assertLoaded(); } catch(e) { status(e.message,true);return; }
+            if (card.querySelector("textarea")) return;
+            const area = document.createElement("textarea");
+            area.value = r.content;
+            area.maxLength = 1000;
+            area.setAttribute("aria-label", "修改记忆内容");
+            const date = document.createElement("input");
+            date.type = "text";
+            date.setAttribute("aria-label", "关心时间 ISO 格式");
+            if (r.dueAt) date.value = new Date(r.dueAt).toISOString();
+            const save = document.createElement("button"),
+              cancel = document.createElement("button");
+            save.textContent = "保存修改";
+            cancel.textContent = "取消";
+            save.onclick = () =>
+              run(async () => {
+                await api({
+                  action: "edit",
+                  id: r.id,
+                  content: area.value,
+                  ...(r.dueAt ? { dueAt: date.value } : {}),
+                });
+                await refresh();
+              });
+            cancel.onclick = render;
+            card.append(area);
+            if (r.dueAt) card.append(date);
+            card.append(save, cancel);
+            area.focus();
+          };
+          buttons.prepend(edit);
+          buttons.insertBefore(actionButton(m.pinned?"取消固定":"固定重要记忆",{action:"pin",id:r.id,pinned:!m.pinned},m.pinned?"已取消手动固定。":"已固定，这条记忆不会自然淡忘。"),del);
+          buttons.insertBefore(m.stage==="archived"?actionButton("重新唤起",{action:"restore",id:r.id},"已将这段往事重新放回当前记忆。"):actionButton("收进归档",{action:"archive",id:r.id},"已归档，内容仍保留。"),del);
+        }
+      }
+      lock();
+    }
+    function renderLearning() {
+      const list=$("learning-items");list.replaceChildren();const filter=$("learning-filter").value;
+      const items=(loaded?.learning?.items||[]).filter(i=>filter==="all"||(filter==="current"?["active","pending"].includes(i.status):i.status===filter));
+      $("learning-state").textContent=!loaded?"尚未加载":loaded.learning?.enabled===false?"已暂停学习与使用":"学习已开启";
+      if(!items.length)list.append(el("p",!loaded?"选择伙伴后，会在这里看到她学会的表达习惯。":"暂时没有这一类学习记录。明确的交流偏好可以直接学会，其他候选会在这里等待确认。","hint"));
+      for(const item of items) {
+        const card=el("div",undefined,"learn-card"),head=el("div",undefined,"row spread"),title=el("h3",item.label||item.code||"表达习惯"),badge=el("span",learningStates[item.status]||"待核对","badge"+(item.status==="pending"?" warm":item.status==="rejected"||item.status==="superseded"?" dim":""));
+        head.append(title,badge);card.append(head);if(item.updatedAt)card.append(el("small",`最近调整 · ${time(item.updatedAt)}`));
+        const details=el("details"),evidence=Array.isArray(item.evidence)?item.evidence:[];details.append(el("summary",`查看学习依据 · ${evidence.length} 条`));
+        for(const e of evidence){const p=el("p",e.quote||"来源内容已清理","quote");p.append(el("small",time(e.time)));details.append(p);}card.append(details);
+        if(["active","pending"].includes(item.status)) {
+          const row=el("div",undefined,"row");
+          if(item.status==="pending")row.append(actionButton("确认使用",{action:"reviewLearning",id:item.id,decision:"approve"},"已确认这条表达习惯。"));
+          row.append(actionButton(item.status==="active"?"撤销这条习惯":"暂不学习",{action:"reviewLearning",id:item.id,decision:"reject"},"已停用这条学习内容。"));card.append(row);
+        }
+        list.append(card);
+      }
+      lock();
+    }
+    $("load").onclick = () => run(()=>refresh(true));
+    $("qq").addEventListener("keydown",e=>{if(e.key==="Enter")run(()=>refresh(true));});
+    $("qq").addEventListener("input",()=>{if(loadedKey&&$("qq").value.trim()!==loadedKey.slice(8))status("QQ 号已改变，请先点击查看记忆；下面仍是上一次加载的伙伴。");});
+    $("search").oninput = ()=>{page=1;render();};$("filter").onchange=()=>{page=1;render();};$("learning-filter").onchange=renderLearning;
+    $("prev").onclick=()=>{page=Math.max(1,page-1);render();};$("next").onclick=()=>{page=Math.min(pages,page+1);render();};
+    for(const [id,action,field] of [["care","care","enabled"],["decay","settings","decayEnabled"],["learning","learning","enabled"]])$(id).onchange=()=>{const value=$(id).checked;run(async()=>{await api({action,[field]:value});await refresh();});};
+    $("export").onclick = () =>
+      run(async () => {
+        const target=assertLoaded();
+        const {ok,...data} = await api(undefined,target);
+        const blob = new Blob(
+          [
+            JSON.stringify(
+              { ...data,exportedAt:new Date().toISOString(),exportPurpose:"只读留存；完整迁移请停机复制数据文件" },
+              null,
+              2,
+            ),
+          ],
+          { type: "application/json" },
+        );
+        const url = URL.createObjectURL(blob),
+          a = document.createElement("a");
+        a.href = url;
+        a.download = `private-memory-${data.key.slice(8)}-${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        status("已导出记忆与学习记录；文件含私聊内容，不等同于完整运行数据库。");
+      });
+    $("clear").onclick = () =>
+      run(async () => {
+        const k = assertLoaded();
+        if (prompt("确认清空长期记忆与学习记录，请输入对方 QQ 号：") !== k.slice(8)) return;
+        await api({ action: "clear" });
+        await refresh();
+        status("这个人的长期记忆与学习记录已清空。");
+      });
+    $("back").onclick = (e) => {
+      e.preventDefault();
+      if(busy)return;
+      location.href =
+        "/?token=" +
+        encodeURIComponent(localStorage.getItem("consoleToken") || "");
+    };
+    restoreSwitches();lock();
+  </script>
+</html>

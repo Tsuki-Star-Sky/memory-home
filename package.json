@@ -1,0 +1,19 @@
+{
+  "name": "memory-home",
+  "version": "0.1.0",
+  "description": "Experimental local private-memory component extracted from qq-bridge",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22.13.0" },
+  "exports": {
+    ".": "./src/private-memory/store.mjs",
+    "./bridge": "./src/private-memory/bridge.mjs",
+    "./capture": "./src/private-memory/capture.mjs",
+    "./care": "./src/private-memory/care.mjs",
+    "./cognitive": "./src/private-memory/cognitive.mjs",
+    "./learning": "./src/private-memory/learning.mjs"
+  },
+  "files": ["src/private-memory/", "public/private-memory.html", "examples/", "LICENSE", "THIRD_PARTY_NOTICES.md", "README.md"],
+  "scripts": { "test": "node --test scripts/test-*.mjs", "demo": "node examples/demo.mjs" },
+  "dependencies": {}
+}
